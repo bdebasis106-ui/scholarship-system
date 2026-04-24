@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1777033562490,
+    "name": "DEBASIS BEHERA",
+    "aadhaar": "856054493175",
+    "phone": "917326032546",
+    "college": "PNS SCHOOL OF ENGINEERING AND TECHNOLOGY",
+    "course": "CSE",
+    "amount": "16,300",
+    "status": "Success"
+  },
+  {
+    "id": 1777034273493,
+    "name": "SURYAKANT MOHANTY",
+    "aadhaar": "879945673241",
+    "phone": "916371842990",
+    "college": "PNS SCHOOL OF ENGINEERING AND TECHNOLOGY",
+    "course": "CSE",
+    "amount": "16300",
+    "status": "Processed"
+  }
+]

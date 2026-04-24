@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="background:#eef3f8;">
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h3>✏️ Edit Scholarship Record</h3>
+
+        <form method="POST" action="/update/<%= student.id %>">
+
+            <input name="name" class="form-control mt-3" value="<%= student.name %>" required>
+
+            <input name="aadhaar" class="form-control mt-3" value="<%= student.aadhaar %>" required>
+
+            <input name="college" class="form-control mt-3" value="<%= student.college %>" required>
+
+            <input name="course" class="form-control mt-3" value="<%= student.course %>" required>
+
+            <input name="amount" class="form-control mt-3" value="<%= student.amount %>" required>
+
+            <select name="status" class="form-select mt-3">
+                <option <%= student.status === "Pending" ? "selected" : "" %>>Pending</option>
+                <option <%= student.status === "Processed" ? "selected" : "" %>>Processed</option>
+                <option <%= student.status === "Success" ? "selected" : "" %>>Success</option>
+                <option <%= student.status === "Failed" ? "selected" : "" %>>Failed</option>
+            </select>
+
+            <button class="btn btn-success w-100 mt-4">Update Record</button>
+
+            <a href="/dashboard" class="btn btn-secondary w-100 mt-2">Back</a>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

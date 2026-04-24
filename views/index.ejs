@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PNSSET Scholarship Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background:#f5f8ff;">
+
+<!-- TOP BAR -->
+<div class="bg-primary text-white py-2">
+    <div class="container d-flex flex-wrap justify-content-between">
+        <span>📞 +91-9937511490</span>
+        <span>✉️ pnsset@gmail.com</span>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/">
+            🎓 PNSSET Scholarship Portal
+        </a>
+
+        <div class="ms-auto d-flex flex-wrap gap-2">
+            <a href="/" class="btn btn-outline-primary btn-sm">Home</a>
+            <a href="/about" class="btn btn-outline-primary btn-sm">About</a>
+            <button onclick="openNoticeBox()" class="btn btn-outline-primary btn-sm">Notice</button>
+            <a href="/contact" class="btn btn-outline-primary btn-sm">Contact</a>
+            <button onclick="openStatusBox()" class="btn btn-success btn-sm">Scholarship Status</button>
+            <a href="/admin" class="btn btn-danger btn-sm">Admin</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="py-5" style="background:linear-gradient(120deg,#052c65,#0d6efd);">
+    <div class="container text-white py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-md-7">
+                <span class="badge bg-warning text-dark mb-3">College Scholarship Management System</span>
+                <h1 class="fw-bold display-5">SC/ST Student Scholarship Portal</h1>
+
+                <p class="lead mt-3">
+                    A digital platform for PNSSET students to check scholarship details,
+                    notices and payment status easily.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <button onclick="openStatusBox()" class="btn btn-light btn-lg fw-bold">
+                        Check Scholarship Status
+                    </button>
+
+                    <button onclick="openNoticeBox()" class="btn btn-outline-light btn-lg fw-bold">
+                        View Notices
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=80"
+                     class="img-fluid rounded-4 shadow-lg"
+                     alt="College Campus">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NOTICE BOX -->
+<div id="noticeBox" class="container my-5" style="display:none;">
+    <div class="card shadow-lg border-0 p-4">
+        <h3 class="text-center text-primary fw-bold">📢 Latest Notices</h3>
+
+        <% if(notices.length === 0) { %>
+            <div class="alert alert-warning text-center mt-3">No notice available right now.</div>
+        <% } %>
+
+        <% notices.forEach(n => { %>
+            <div class="alert alert-info mt-3">
+                <b><%= n.title %></b><br>
+                <%= n.message %><br>
+                <small>Published: <%= n.date %></small>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<!-- STATUS BOX -->
+<div id="statusBox" class="container my-5" style="display:none;">
+    <div class="card shadow-lg border-0 p-4 mx-auto" style="max-width:560px;">
+        <h3 class="text-center text-primary fw-bold">Scholarship Status Check</h3>
+        <p class="text-muted text-center">Enter Aadhaar number to view details</p>
+
+        <form method="POST" action="/check">
+            <input name="aadhaar" class="form-control form-control-lg mb-3"
+                   placeholder="Enter Aadhaar Number" required>
+
+            <button class="btn btn-primary btn-lg w-100 fw-bold">
+                View Scholarship Details
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- STATISTICS -->
+<section class="container my-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-3">
+            <div class="card border-0 shadow p-4">
+                <h2 class="text-primary fw-bold">500+</h2>
+                <p class="mb-0">Students Supported</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow p-4">
+                <h2 class="text-success fw-bold">24/7</h2>
+                <p class="mb-0">Online Access</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow p-4">
+                <h2 class="text-warning fw-bold">100%</h2>
+                <p class="mb-0">Admin Control</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow p-4">
+                <h2 class="text-danger fw-bold">Fast</h2>
+                <p class="mb-0">Verification</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section class="container my-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Portal Services</h2>
+        <p class="text-muted">Useful digital services for students and college administration</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=900&q=80"
+                     class="card-img-top" style="height:220px;object-fit:cover;">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Student Support</h5>
+                    <p>Students can easily access scholarship information using Aadhaar number.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"
+                     class="card-img-top" style="height:220px;object-fit:cover;">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">College Management</h5>
+                    <p>Admin can manage student records, notices and scholarship updates securely.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=80"
+                     class="card-img-top" style="height:220px;object-fit:cover;">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Digital Verification</h5>
+                    <p>Fast Aadhaar-based scholarship search and record verification system.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY PORTAL -->
+<section class="bg-white py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=900&q=80"
+                     class="img-fluid rounded-4 shadow"
+                     alt="Education">
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="text-primary fw-bold">Why This Portal?</h2>
+                <p class="lead">
+                    This portal helps students and college staff manage scholarship information digitally.
+                </p>
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">✅ Easy scholarship status checking</li>
+                    <li class="list-group-item">✅ Secure admin dashboard</li>
+                    <li class="list-group-item">✅ Digital notice management</li>
+                    <li class="list-group-item">✅ Fast student record search</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-dark text-white pt-5 pb-3">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h5 class="fw-bold">PNSSET Scholarship Portal</h5>
+                <p>Digital scholarship support system for SC/ST students.</p>
+            </div>
+
+            <div class="col-md-4">
+                <h5 class="fw-bold">Quick Links</h5>
+                <p><a href="/" class="text-white text-decoration-none">Home</a></p>
+                <p><a href="/about" class="text-white text-decoration-none">About</a></p>
+                <p><a href="/contact" class="text-white text-decoration-none">Contact</a></p>
+            </div>
+
+            <div class="col-md-4">
+                <h5 class="fw-bold">Contact</h5>
+                <p>📍 Kendrapara, Odisha</p>
+                <p>📞 +91-9937511490</p>
+                <p>✉️ pnsset@gmail.com</p>
+            </div>
+        </div>
+
+        <hr>
+        <p class="text-center mb-0">© 2026 Scholarship Management System</p>
+    </div>
+</footer>
+
+<script>
+function openStatusBox() {
+    document.getElementById("statusBox").style.display = "block";
+    document.getElementById("noticeBox").style.display = "none";
+    document.getElementById("statusBox").scrollIntoView({ behavior: "smooth" });
+}
+
+function openNoticeBox() {
+    document.getElementById("noticeBox").style.display = "block";
+    document.getElementById("statusBox").style.display = "none";
+    document.getElementById("noticeBox").scrollIntoView({ behavior: "smooth" });
+}
+</script>
+
+</body>
+</html>
