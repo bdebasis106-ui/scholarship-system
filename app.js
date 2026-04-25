@@ -246,7 +246,7 @@ app.post("/admin/login", async (req, res) => {
         });
 
         if (!admin) {
-            await Admin.create({ username: "admin", password: "admin123" });
+            await Admin.create({ username: "scholarship@gmail.com", password: "scholarship106" });
 
             admin = await Admin.findOne({
                 username: req.body.username,
