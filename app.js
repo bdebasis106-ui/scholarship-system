@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const session = require("express-session");
+const path = require("path");
 
 const app = express();
 
@@ -18,20 +19,30 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// 📁 Read / Write
+// 📁 SAFE Read function (🔥 FIX)
 function readData(file) {
-    return JSON.parse(fs.readFileSync("./data/" + file));
+    try {
+        const data = fs.readFileSync(path.join(__dirname, "data", file));
+        return JSON.parse(data);
+    } catch (err) {
+        console.log("File error:", file);
+        return []; // crash nahi hoga
+    }
 }
 
 function writeData(file, data) {
-    fs.writeFileSync("./data/" + file, JSON.stringify(data, null, 2));
+    fs.writeFileSync(path.join(__dirname, "data", file), JSON.stringify(data, null, 2));
 }
 
 // 🏠 HOME
 app.get("/", (req, res) => {
     let notices = readData("notices.json");
-    let settings = readData("settings.json");
-    res.render("index", { notices, settings });
+    let settings = readData("settings.json") || {};
+
+    res.render("index", {
+        notices,
+        settings: settings[0] || settings // array ya object dono handle
+    });
 });
 
 // =======================
@@ -54,7 +65,7 @@ app.post("/student-login", (req, res) => {
         req.session.student = student;
         res.redirect("/student-dashboard");
     } else {
-        res.send("Invalid login");
+        res.send("❌ Invalid login");
     }
 });
 
@@ -75,6 +86,7 @@ app.get("/student-dashboard", (req, res) => {
 
 app.get("/id-card", (req, res) => {
     if (!req.session.student) return res.redirect("/student-login");
+
     res.render("id-card", { student: req.session.student });
 });
 
@@ -83,7 +95,10 @@ app.get("/id-card", (req, res) => {
 // =======================
 
 app.get("/payment", (req, res) => {
-    if (!req.session.student) return res.redirect("/student-login");
+    if (!req.session.student) {
+        return res.redirect("/student-login"); // 🔥 IMPORTANT FIX
+    }
+
     res.render("payment", { student: req.session.student });
 });
 
@@ -93,6 +108,7 @@ app.post("/pay", (req, res) => {
 
 app.get("/payment-success", (req, res) => {
     if (!req.session.student) return res.redirect("/student-login");
+
     res.render("payment-success", { student: req.session.student });
 });
 
@@ -139,7 +155,7 @@ app.get("/admin", (req, res) => {
 });
 
 app.post("/admin/login", (req, res) => {
-    let admin = readData("admin.json")[0];
+    let admin = readData("admin.json")[0] || {};
 
     if (
         req.body.username === admin.username &&
@@ -190,6 +206,15 @@ app.post("/add", (req, res) => {
 app.get("/logout", (req, res) => {
     req.session.destroy();
     res.redirect("/");
+});
+
+// =======================
+// ❌ ERROR HANDLER (🔥 NEW)
+// =======================
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send("Something broke! ❌");
 });
 
 // server
