@@ -19,7 +19,9 @@ app.use(session({
     saveUninitialized: true
 }));
 
-mongoose.connect("mongodb+srv://debasis:12345678@cluster0.pkeg2f7.mongodb.net/scholarship_system?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.set("strictQuery", false);
+
+mongoose.connect("mongodb+srv://debasis:Debasis%402026PNS@cluster0.pkeg2f7.mongodb.net/scholarship_system?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("MongoDB Error:", err));
 
