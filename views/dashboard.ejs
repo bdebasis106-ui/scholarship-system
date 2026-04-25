@@ -191,6 +191,27 @@
         <%= s.course %>
     <% } %>
 </td>
+<select name="semester" class="form-select mb-3" required>
+    <option value="">Select Semester</option>
+    <option value="1st Semester" <%= s.semester==="1st Semester"?"selected":"" %>>
+        1st Semester
+    </option>
+    <option value="2nd Semester" <%= s.semester==="2nd Semester"?"selected":"" %>>
+        2nd Semester
+    </option>
+    <option value="3rd Semester" <%= s.semester==="3rd Semester"?"selected":"" %>>
+        3rd Semester
+    </option>
+    <option value="4th Semester" <%= s.semester==="4th Semester"?"selected":"" %>>
+        4th Semester
+    </option>
+    <option value="5th Semester" <%= s.semester==="5th Semester"?"selected":"" %>>
+        5th Semester
+    </option>
+    <option value="6th Semester" <%= s.semester==="6th Semester"?"selected":"" %>>
+        6th Semester
+    </option>
+</select>
                         <td>₹<%= s.amount %></td>
 
                         <td>
