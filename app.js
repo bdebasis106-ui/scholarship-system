@@ -1,271 +1,227 @@
 const express = require("express");
-const fs = require("fs");
 const session = require("express-session");
-const path = require("path");
 const multer = require("multer");
+const mongoose = require("mongoose");
 
 const app = express();
 
-// multer upload setup
-const upload = multer({
-    dest: "public/uploads/"
-});
+const upload = multer({ dest: "public/uploads/" });
 
-// middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 
-// session setup
 app.use(session({
     secret: "secretkey",
     resave: false,
     saveUninitialized: true
 }));
 
-// 📁 SAFE Read function
-function readData(file) {
-    try {
-        const data = fs.readFileSync(path.join(__dirname, "data", file));
-        return JSON.parse(data);
-    } catch (err) {
-        console.log("File error:", file);
-        return [];
-    }
-}
+// ✅ MongoDB CONNECT
+mongoose.connect("mongodb+srv://debasis:12345678@cluster0.pkeg2f7.mongodb.net/scholarship_system")
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log(err));
 
-function writeData(file, data) {
-    fs.writeFileSync(path.join(__dirname, "data", file), JSON.stringify(data, null, 2));
-}
+// =======================
+// 📦 SCHEMA
+// =======================
 
-// 🏠 HOME
-app.get("/", (req, res) => {
-    let notices = readData("notices.json");
-    let settings = readData("settings.json") || {};
+const studentSchema = new mongoose.Schema({
+    name: String,
+    aadhaar: String,
+    phone: String,
+    college: String,
+    course: String,
+    amount: String,
+    status: { type: String, default: "Pending" },
+    paymentStatus: { type: String, default: "Pending" },
+    paymentScreenshot: String,
+    username: String,
+    password: String,
+    otp: String,
+    otpExpiry: Date
+});
+
+const noticeSchema = new mongoose.Schema({
+    title: String,
+    message: String,
+    date: { type: String, default: () => new Date().toLocaleDateString() }
+});
+
+const adminSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+const Student = mongoose.model("Student", studentSchema);
+const Notice = mongoose.model("Notice", noticeSchema);
+const Admin = mongoose.model("Admin", adminSchema);
+
+// =======================
+// HOME
+// =======================
+
+app.get("/", async (req, res) => {
+    const notices = await Notice.find().sort({ _id: -1 });
 
     res.render("index", {
         notices,
-        settings: settings[0] || settings
+        settings: {
+            collegeName: "PNS SCHOOL OF ENGINEERING AND TECHNOLOGY",
+            phone: "9937511490",
+            email: "pnsset@gmail.com"
+        }
     });
 });
 
 // =======================
-// 🔐 STUDENT LOGIN SYSTEM
+// REGISTER
+// =======================
+
+app.get("/student-register", (req, res) => {
+    res.render("student-register");
+});
+
+app.post("/student-register", async (req, res) => {
+    const { name, aadhaar, phone, college, course, username, password } = req.body;
+
+    await Student.create({
+        name,
+        aadhaar,
+        phone,
+        college,
+        course,
+        amount: "16300",
+        username,
+        password
+    });
+
+    res.redirect("/student-login");
+});
+
+// =======================
+// LOGIN + OTP
 // =======================
 
 app.get("/student-login", (req, res) => {
     res.render("student-login");
 });
 
-app.post("/student-login", (req, res) => {
-    let students = readData("students.json");
-
-    let student = students.find(s =>
-        s.username === req.body.username &&
-        s.password === req.body.password
-    );
-
-    if (student) {
-        req.session.student = student;
-        res.redirect("/student-dashboard");
-    } else {
-        res.send("❌ Invalid login");
-    }
-});
-
-app.get("/student-dashboard", (req, res) => {
-    if (!req.session.student) return res.redirect("/student-login");
-
-    let students = readData("students.json");
-    let latestStudent = students.find(s => s.id == req.session.student.id);
-
-    if (latestStudent) {
-        req.session.student = latestStudent;
-    }
-
-    let notices = readData("notices.json");
-
-    res.render("student-dashboard", {
-        student: req.session.student,
-        notices
+app.post("/student-login", async (req, res) => {
+    const student = await Student.findOne({
+        username: req.body.username,
+        password: req.body.password
     });
+
+    if (!student) return res.send("❌ Invalid login");
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    student.otp = otp;
+    student.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
+    await student.save();
+
+    req.session.pendingStudentId = student._id;
+
+    console.log("OTP:", otp);
+
+    res.redirect("/verify-otp");
 });
 
 // =======================
-// 🪪 ID CARD
+// OTP VERIFY
 // =======================
 
-app.get("/id-card", (req, res) => {
+app.get("/verify-otp", (req, res) => {
+    res.render("verify-otp");
+});
+
+app.post("/verify-otp", async (req, res) => {
+    const student = await Student.findById(req.session.pendingStudentId);
+
+    if (!student) return res.redirect("/student-login");
+
+    if (student.otp !== req.body.otp) return res.send("Invalid OTP");
+
+    if (student.otpExpiry < new Date()) return res.send("OTP expired");
+
+    student.otp = "";
+    student.otpExpiry = null;
+    await student.save();
+
+    req.session.student = student;
+
+    res.redirect("/student-dashboard");
+});
+
+// =======================
+// DASHBOARD
+// =======================
+
+app.get("/student-dashboard", async (req, res) => {
     if (!req.session.student) return res.redirect("/student-login");
 
-    res.render("id-card", { student: req.session.student });
+    const student = await Student.findById(req.session.student._id);
+    const notices = await Notice.find().sort({ _id: -1 });
+
+    res.render("student-dashboard", { student, notices });
 });
 
 // =======================
-// 💳 PAYMENT SYSTEM
+// PAYMENT
 // =======================
 
 app.get("/payment", (req, res) => {
-    if (!req.session.student) {
-        return res.redirect("/student-login");
-    }
-
     res.render("payment", { student: req.session.student });
 });
 
-app.post("/pay", upload.single("screenshot"), (req, res) => {
-    if (!req.session.student) return res.redirect("/student-login");
+app.post("/pay", upload.single("screenshot"), async (req, res) => {
+    const student = await Student.findById(req.session.student._id);
 
-    let students = readData("students.json");
+    student.paymentStatus = "Verification Pending";
+    student.paymentScreenshot = req.file ? "/uploads/" + req.file.filename : "";
 
-    students = students.map(s => {
-        if (s.id == req.session.student.id) {
-            s.paymentStatus = "Verification Pending";
-            s.paymentScreenshot = req.file ? "/uploads/" + req.file.filename : "";
-            req.session.student = s;
-        }
-        return s;
-    });
+    await student.save();
 
-    writeData("students.json", students);
     res.redirect("/payment-success");
 });
 
 app.get("/payment-success", (req, res) => {
-    if (!req.session.student) return res.redirect("/student-login");
-
     res.render("payment-success", { student: req.session.student });
 });
 
-app.get("/payment-failed", (req, res) => {
-    res.render("payment-failed");
-});
-
 // =======================
-// OLD SYSTEM (ADMIN + ETC)
+// ADMIN
 // =======================
 
-app.get("/about", (req, res) => {
-    res.render("about");
+app.get("/admin", (req, res) => res.render("admin-login"));
+
+app.post("/admin/login", async (req, res) => {
+    const admin = await Admin.findOne({
+        username: req.body.username,
+        password: req.body.password
+    });
+
+    if (!admin) return res.send("Invalid login");
+
+    req.session.admin = true;
+    res.redirect("/dashboard");
 });
 
-app.get("/notice", (req, res) => {
-    let notices = readData("notices.json");
-    res.render("notice", { notices });
-});
-
-app.get("/contact", (req, res) => {
-    res.render("contact");
-});
-
-app.post("/check", (req, res) => {
-    let students = readData("students.json");
-
-    let student = students.find(s => s.aadhaar === req.body.aadhaar);
-
-    if (student) {
-        res.render("result", { student });
-    } else {
-        res.send("❌ No record found");
-    }
-});
-
-app.get("/admin", (req, res) => {
-    res.render("admin-login");
-});
-
-app.post("/admin/login", (req, res) => {
-    let admin = readData("admin.json")[0] || {};
-
-    if (
-        req.body.username === admin.username &&
-        req.body.password === admin.password
-    ) {
-        req.session.admin = true;
-        res.redirect("/dashboard");
-    } else {
-        res.send("Invalid login");
-    }
-});
-
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", async (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
-    let students = readData("students.json");
-    let notices = readData("notices.json");
+    const students = await Student.find().sort({ _id: -1 });
+    const notices = await Notice.find().sort({ _id: -1 });
 
     res.render("dashboard", { students, notices });
 });
 
-app.post("/add", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-
-    students.push({
-        id: Date.now(),
-        name: req.body.name,
-        aadhaar: req.body.aadhaar,
-        phone: req.body.phone,
-        college: req.body.college,
-        course: req.body.course,
-        amount: req.body.amount,
-        status: req.body.status,
-        username: req.body.username,
-        password: req.body.password,
-        paymentStatus: "Pending",
-        paymentScreenshot: ""
-    });
-
-    writeData("students.json", students);
-    res.redirect("/dashboard");
-});
-
-// ✅ ADMIN PAYMENT APPROVE
-app.get("/approve-payment/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-
-    students = students.map(s => {
-        if (s.id == req.params.id) {
-            s.paymentStatus = "Paid";
-        }
-        return s;
-    });
-
-    writeData("students.json", students);
-    res.redirect("/dashboard");
-});
-
-// ❌ ADMIN PAYMENT REJECT
-app.get("/reject-payment/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-
-    students = students.map(s => {
-        if (s.id == req.params.id) {
-            s.paymentStatus = "Rejected";
-        }
-        return s;
-    });
-
-    writeData("students.json", students);
-    res.redirect("/dashboard");
-});
-
-app.get("/logout", (req, res) => {
-    req.session.destroy();
-    res.redirect("/");
-});
-
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send("Something broke! ❌");
-});
+// =======================
+// START
+// =======================
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Server running");
