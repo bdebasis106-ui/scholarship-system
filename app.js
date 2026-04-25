@@ -146,7 +146,8 @@ app.post("/student-login", async (req, res) => {
 
         console.log("OTP:", otp);
         
-        await sendOTP(student.phone, otp);
+        // await sendOTP(student.phone, otp);
+        console.log("OTP:", otp);
         res.redirect("/verify-otp");
     } catch (err) {
         res.send("Login error: " + err.message);
