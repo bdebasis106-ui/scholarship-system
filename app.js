@@ -187,7 +187,7 @@ app.post("/verify-otp", async (req, res) => {
 async function sendOTP(phone, otp) {
     await axios.get("https://www.fast2sms.com/dev/bulkV2", {
         params: {
-            authorization: "YOUR_FAST2SMS_API_KEY",
+            authorization: "PASTE_REAL_API_KEY_HERE",
             route: "otp",
             variables_values: otp,
             flash: 0,
