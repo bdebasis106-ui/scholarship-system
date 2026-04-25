@@ -163,6 +163,30 @@ app.get("/student-scholarship-details", async (req, res) => {
 
     res.render("student-scholarship-details", { student });
 });
+app.get("/student-scholarship-details", async (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+
+    try {
+        const student = await Student.findById(req.session.student._id);
+
+        if (!student) return res.redirect("/student-login");
+
+        // ✅ Aadhaar se verify (admin added/approved data)
+        const verifiedData = await Student.findOne({
+            aadhaar: student.aadhaar,
+            status: { $ne: "Pending" } // Pending nahi hona chahiye
+        });
+
+        if (!verifiedData) {
+            return res.render("no-data", { student });
+        }
+
+        res.render("student-scholarship-details", { student: verifiedData });
+
+    } catch (err) {
+        res.send("Error: " + err.message);
+    }
+});
 
 // ID CARD
 app.get("/id-card", async (req, res) => {
