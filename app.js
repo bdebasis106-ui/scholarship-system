@@ -144,7 +144,8 @@ app.post("/student-login", async (req, res) => {
         req.session.pendingStudentId = student._id;
 
         console.log("OTP:", otp);
-
+        
+        await sendOTP(student.phone, otp);
         res.redirect("/verify-otp");
     } catch (err) {
         res.send("Login error: " + err.message);
@@ -182,6 +183,17 @@ app.post("/verify-otp", async (req, res) => {
         res.send("OTP error: " + err.message);
     }
 });
+async function sendOTP(phone, otp) {
+    await axios.get("https://www.fast2sms.com/dev/bulkV2", {
+        params: {
+            authorization: "YOUR_FAST2SMS_API_KEY",
+            route: "otp",
+            variables_values: otp,
+            flash: 0,
+            numbers: phone
+        }
+    });
+}
 
 // STUDENT DASHBOARD
 app.get("/student-dashboard", async (req, res) => {
