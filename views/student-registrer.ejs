@@ -2,48 +2,107 @@
 <html>
 <head>
     <title>Student Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            display: flex;
+            align-items: center;
+        }
+
+        .register-card {
+            border: none;
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        .left-box {
+            background: linear-gradient(135deg, #052c65, #0d6efd);
+            color: white;
+            padding: 35px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 11px;
+        }
+
+        .btn-register {
+            border-radius: 12px;
+            font-weight: 700;
+            padding: 11px;
+        }
+    </style>
 </head>
 
-<body style="background:#eef3ff;">
+<body>
 
-<div class="container mt-5">
-    <div class="card shadow p-4 mx-auto" style="max-width:600px;">
-        <h3 class="text-center text-primary">Student Registration</h3>
+<div class="container">
+    <div class="card register-card shadow-lg mx-auto" style="max-width:900px;">
+        <div class="row g-0">
 
-        <form method="POST" action="/student-register" class="row g-3">
-            <div class="col-md-6">
-                <input name="name" class="form-control" placeholder="Student Name" required>
+            <div class="col-md-5 left-box d-flex flex-column justify-content-center">
+                <h2 class="fw-bold">🎓 Student Registration</h2>
+                <p class="mt-3">
+                    Create your student account to login, check scholarship status,
+                    view notices and submit payment proof.
+                </p>
+                <a href="/student-login" class="btn btn-light mt-3 fw-bold">
+                    Already Registered? Login
+                </a>
             </div>
 
-            <div class="col-md-6">
-                <input name="aadhaar" class="form-control" placeholder="Aadhaar Number" required>
+            <div class="col-md-7 bg-white p-4">
+                <h3 class="text-primary fw-bold mb-3">Create Account</h3>
+
+                <form method="POST" action="/student-register" class="row g-3">
+
+                    <div class="col-md-6">
+                        <input name="name" class="form-control" placeholder="Full Name" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input name="aadhaar" class="form-control" placeholder="Aadhaar Number" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input name="phone" class="form-control" placeholder="Phone Number" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input name="course" class="form-control" placeholder="Course" required>
+                    </div>
+
+                    <div class="col-12">
+                        <input name="college" class="form-control" placeholder="College Name" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input name="username" class="form-control" placeholder="Create Username" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="password" name="password" class="form-control" placeholder="Create Password" required>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-success w-100 btn-register">
+                            Register Now
+                        </button>
+                    </div>
+
+                </form>
+
+                <a href="/" class="btn btn-outline-secondary w-100 mt-3">
+                    Back to Home
+                </a>
             </div>
 
-            <div class="col-md-6">
-                <input name="phone" class="form-control" placeholder="Phone Number" required>
-            </div>
-
-            <div class="col-md-6">
-                <input name="college" class="form-control" placeholder="College Name" required>
-            </div>
-
-            <div class="col-md-6">
-                <input name="course" class="form-control" placeholder="Course" required>
-            </div>
-
-            <div class="col-md-6">
-                <input name="username" class="form-control" placeholder="Create Username" required>
-            </div>
-
-            <div class="col-md-6">
-                <input name="password" type="password" class="form-control" placeholder="Create Password" required>
-            </div>
-
-            <div class="col-12">
-                <button class="btn btn-primary w-100">Register</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
