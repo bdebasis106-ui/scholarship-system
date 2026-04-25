@@ -2,7 +2,6 @@ const express = require("express");
 const session = require("express-session");
 const multer = require("multer");
 const mongoose = require("mongoose");
-const axios = require("axios");
 
 const app = express();
 
@@ -38,8 +37,6 @@ const studentSchema = new mongoose.Schema({
     paymentScreenshot: String,
     username: String,
     password: String,
-    otp: String,
-    otpExpiry: Date,
     photo: String
 }, { timestamps: true });
 
@@ -130,72 +127,22 @@ app.get("/student-login", (req, res) => {
 app.post("/student-login", async (req, res) => {
     try {
         const student = await Student.findOne({
-            username: req.body.username,
-            password: req.body.password
+            username: req.body.username.trim(),
+            password: req.body.password.trim()
         });
 
         if (!student) return res.send("❌ Invalid login");
-
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-        student.otp = otp;
-        student.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
-        await student.save();
-
-        req.session.pendingStudentId = student._id;
-
-        console.log("OTP:", otp);
-        
-        // await sendOTP(student.phone, otp);
-        console.log("OTP:", otp);
-        res.redirect("/verify-otp");
-    } catch (err) {
-        res.send("Login error: " + err.message);
-    }
-});
-
-// OTP VERIFY
-app.get("/verify-otp", (req, res) => {
-    if (!req.session.pendingStudentId) return res.redirect("/student-login");
-    res.render("verify-otp");
-});
-
-app.post("/verify-otp", async (req, res) => {
-    try {
-        const student = await Student.findById(req.session.pendingStudentId);
-
-        if (!student) return res.redirect("/student-login");
-
-        if (student.otp !== req.body.otp) return res.send("❌ Invalid OTP");
-
-        if (student.otpExpiry < new Date()) return res.send("❌ OTP expired");
-
-        student.otp = "";
-        student.otpExpiry = null;
-        await student.save();
 
         req.session.student = {
             _id: student._id.toString()
         };
 
-        req.session.pendingStudentId = null;
-
         res.redirect("/student-dashboard");
+
     } catch (err) {
-        res.send("OTP error: " + err.message);
+        res.send("Login error: " + err.message);
     }
 });
-async function sendOTP(phone, otp) {
-    await axios.get("https://www.fast2sms.com/dev/bulkV2", {
-        params: {
-            authorization: "PASTE_REAL_API_KEY_HERE",
-            route: "otp",
-            variables_values: otp,
-            flash: 0,
-            numbers: phone
-        }
-    });
-}
 
 // STUDENT DASHBOARD
 app.get("/student-dashboard", async (req, res) => {
@@ -260,7 +207,10 @@ app.post("/admin/login", async (req, res) => {
         });
 
         if (!admin) {
-            await Admin.create({ username: "scholarship@gmail.com", password: "scholarship106" });
+            await Admin.create({
+                username: "scholarship@gmail.com",
+                password: "scholarship106"
+            });
 
             admin = await Admin.findOne({
                 username: req.body.username,
