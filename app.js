@@ -137,7 +137,7 @@ app.post("/student-login", async (req, res) => {
             _id: student._id.toString()
         };
 
-        res.redirect("/student-dashboard");
+        res.redirect("/student-scholarship-details");
 
     } catch (err) {
         res.send("Login error: " + err.message);
@@ -154,6 +154,14 @@ app.get("/student-dashboard", async (req, res) => {
     if (!student) return res.redirect("/student-login");
 
     res.render("student-dashboard", { student, notices });
+});
+app.get("/student-scholarship-details", async (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+
+    const student = await Student.findById(req.session.student._id);
+    if (!student) return res.redirect("/student-login");
+
+    res.render("student-scholarship-details", { student });
 });
 
 // ID CARD
