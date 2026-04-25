@@ -8,10 +8,9 @@
     "course": "CSE",
     "amount": "16300",
     "status": "Success",
-
     "username": "debasis",
     "password": "1234",
-    "photo": "/public/student1.jpg",
+    "photo": "/student1.jpg",
     "paymentStatus": "Paid"
   },
   {
@@ -23,10 +22,9 @@
     "course": "CSE",
     "amount": "16300",
     "status": "Processed",
-
     "username": "suryakant",
     "password": "1234",
-    "photo": "/public/student2.jpg",
+    "photo": "/student2.jpg",
     "paymentStatus": "Pending"
   }
 ]
