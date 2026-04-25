@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background:#eef3ff;">
+
+<nav class="navbar navbar-dark bg-primary px-4">
+    <span class="navbar-brand fw-bold">🎓 Student Dashboard</span>
+    <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+</nav>
+
+<div class="container my-5">
+
+    <div class="card shadow border-0 p-4 mb-4">
+        <h3 class="text-primary">Welcome, <%= student.name %></h3>
+
+        <p><b>College:</b> <%= student.college %></p>
+        <p><b>Course:</b> <%= student.course %></p>
+        <p><b>Aadhaar:</b> <%= student.aadhaar %></p>
+        <p><b>Phone:</b> <%= student.phone %></p>
+        <p><b>Amount:</b> ₹<%= student.amount %></p>
+
+        <p>
+            <b>Scholarship Status:</b>
+            <% if(student.status === "Success") { %>
+                <span class="badge bg-success">Success</span>
+            <% } else if(student.status === "Processed") { %>
+                <span class="badge bg-info text-dark">Processed</span>
+            <% } else if(student.status === "Failed") { %>
+                <span class="badge bg-danger">Failed</span>
+            <% } else { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+            <% } %>
+        </p>
+
+        <p>
+            <b>Payment Status:</b>
+            <% if(student.paymentStatus === "Paid") { %>
+                <span class="badge bg-success">Paid</span>
+            <% } else { %>
+                <span class="badge bg-danger">Pending</span>
+            <% } %>
+        </p>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="/payment" class="btn btn-success">💳 Pay Now</a>
+            <a href="/id-card" class="btn btn-primary">🪪 View ID Card</a>
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 p-4">
+        <h4 class="text-primary">📢 Notices</h4>
+
+        <% if(notices.length === 0) { %>
+            <p class="text-muted">No notices available</p>
+        <% } %>
+
+        <% notices.forEach(n => { %>
+            <div class="alert alert-info">
+                <b><%= n.title %></b><br>
+                <%= n.message %><br>
+                <small><%= n.date %></small>
+            </div>
+        <% }) %>
+    </div>
+
+</div>
+
+</body>
+</html>
