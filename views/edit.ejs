@@ -24,10 +24,31 @@
 
             <select name="status" class="form-select mt-3">
                 <option <%= student.status === "Pending" ? "selected" : "" %>>Pending</option>
-                <option <%= student.status === "Processed" ? "selected" : "" %>>Processed</option>
                 <option <%= student.status === "Success" ? "selected" : "" %>>Success</option>
-                <option <%= student.status === "Failed" ? "selected" : "" %>>Failed</option>
             </select>
+            <select name="course" class="form-select">
+
+    <option value="CSE" <%= student.course==="CSE"?"selected":"" %>>
+        CSE - Computer Science Engineering
+    </option>
+
+    <option value="CIVIL" <%= student.course==="CIVIL"?"selected":"" %>>
+        CIVIL - Civil Engineering
+    </option>
+
+    <option value="MECHANICAL" <%= student.course==="MECHANICAL"?"selected":"" %>>
+        MECHANICAL - Mechanical Engineering
+    </option>
+
+    <option value="ELECTRICAL" <%= student.course==="ELECTRICAL"?"selected":"" %>>
+        ELECTRICAL - Electrical Engineering
+    </option>
+
+    <option value="ELECTRONICS" <%= student.course==="ELECTRONICS"?"selected":"" %>>
+        ELECTRONICS - Electronics Engineering
+    </option>
+
+</select>
 
             <button class="btn btn-success w-100 mt-4">Update Record</button>
 

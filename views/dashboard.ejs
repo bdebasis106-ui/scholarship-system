@@ -51,7 +51,15 @@
             </div>
 
             <div class="col-md-4">
-                <input name="course" class="form-control" placeholder="Course" required>
+                <select name="course" class="form-select" required>
+    <option value="">Select Branch</option>
+
+    <option value="CSE">CSE - Computer Science Engineering</option>
+    <option value="CIVIL">CIVIL - Civil Engineering</option>
+    <option value="MECHANICAL">MECHANICAL - Mechanical Engineering</option>
+    <option value="ELECTRICAL">ELECTRICAL - Electrical Engineering</option>
+    <option value="ELECTRONICS">ELECTRONICS - Electronics Engineering</option>
+</select>
             </div>
 
             <div class="col-md-4">
@@ -158,7 +166,21 @@
                         <td><%= s.aadhaar %></td>
                         <td><%= s.phone || "No Number" %></td>
                         <td><%= s.college %></td>
-                        <td><%= s.course %></td>
+                        <td>
+    <% if(s.course === "CSE") { %>
+        Computer Science Engineering
+    <% } else if(s.course === "CIVIL") { %>
+        Civil Engineering
+    <% } else if(s.course === "MECHANICAL") { %>
+        Mechanical Engineering
+    <% } else if(s.course === "ELECTRICAL") { %>
+        Electrical Engineering
+    <% } else if(s.course === "ELECTRONICS") { %>
+        Electronics Engineering
+    <% } else { %>
+        <%= s.course %>
+    <% } %>
+</td>
                         <td>₹<%= s.amount %></td>
 
                         <td>
