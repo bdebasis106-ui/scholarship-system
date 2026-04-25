@@ -89,6 +89,9 @@
             box-shadow: 0 30px 70px rgba(0,0,0,.22);
             transform: perspective(1100px) rotateX(2deg);
         }
+        .navbar .d-flex {
+    flex-wrap: nowrap;
+}
 
         .section-title {
             font-weight: 900;
@@ -152,7 +155,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="mainNav">
-            <div class="ms-auto d-flex flex-wrap gap-2 mt-3 mt-lg-0">
+            <div class="ms-auto d-flex align-items-center gap-2 mt-3 mt-lg-0">
                 <a href="/" class="btn btn-outline-primary btn-sm nav-btn">Home</a>
                 <a href="/about" class="btn btn-outline-primary btn-sm nav-btn">About</a>
                 <button onclick="openNoticeBox()" class="btn btn-outline-primary btn-sm nav-btn">Notice</button>
