@@ -7,6 +7,7 @@ const app = express();
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 
@@ -17,7 +18,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// 📁 Read / Write functions
+// 📁 Read / Write
 function readData(file) {
     return JSON.parse(fs.readFileSync("./data/" + file));
 }
@@ -26,29 +27,100 @@ function writeData(file, data) {
     fs.writeFileSync("./data/" + file, JSON.stringify(data, null, 2));
 }
 
-// 🏠 HOME ROUTE
+// 🏠 HOME
 app.get("/", (req, res) => {
     let notices = readData("notices.json");
-    res.render("index", { notices });
+    let settings = readData("settings.json");
+    res.render("index", { notices, settings });
 });
 
-// ABOUT PAGE
+// =======================
+// 🔐 STUDENT LOGIN SYSTEM
+// =======================
+
+app.get("/student-login", (req, res) => {
+    res.render("student-login");
+});
+
+app.post("/student-login", (req, res) => {
+    let students = readData("students.json");
+
+    let student = students.find(s =>
+        s.username === req.body.username &&
+        s.password === req.body.password
+    );
+
+    if (student) {
+        req.session.student = student;
+        res.redirect("/student-dashboard");
+    } else {
+        res.send("Invalid login");
+    }
+});
+
+app.get("/student-dashboard", (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+
+    let notices = readData("notices.json");
+
+    res.render("student-dashboard", {
+        student: req.session.student,
+        notices
+    });
+});
+
+// =======================
+// 🪪 ID CARD
+// =======================
+
+app.get("/id-card", (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+    res.render("id-card", { student: req.session.student });
+});
+
+// =======================
+// 💳 PAYMENT SYSTEM
+// =======================
+
+app.get("/payment", (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+    res.render("payment", { student: req.session.student });
+});
+
+app.post("/pay", (req, res) => {
+    res.redirect("/payment-success");
+});
+
+app.get("/payment-success", (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+    res.render("payment-success", { student: req.session.student });
+});
+
+app.get("/payment-failed", (req, res) => {
+    res.render("payment-failed");
+});
+
+// =======================
+// OLD SYSTEM (ADMIN + ETC)
+// =======================
+
+// ABOUT
 app.get("/about", (req, res) => {
     res.render("about");
 });
 
-// NOTICE PAGE
+// NOTICE
 app.get("/notice", (req, res) => {
     let notices = readData("notices.json");
     res.render("notice", { notices });
 });
 
-// CONTACT PAGE
+// CONTACT
 app.get("/contact", (req, res) => {
     res.render("contact");
 });
 
-// 🔍 Aadhaar Check
+// Aadhaar check
 app.post("/check", (req, res) => {
     let students = readData("students.json");
 
@@ -61,12 +133,11 @@ app.post("/check", (req, res) => {
     }
 });
 
-// 🔐 Admin Login Page
+// ADMIN LOGIN
 app.get("/admin", (req, res) => {
     res.render("admin-login");
 });
 
-// 🔐 Admin Login Logic
 app.post("/admin/login", (req, res) => {
     let admin = readData("admin.json")[0];
 
@@ -81,7 +152,7 @@ app.post("/admin/login", (req, res) => {
     }
 });
 
-// 📊 Dashboard
+// DASHBOARD
 app.get("/dashboard", (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
@@ -91,7 +162,7 @@ app.get("/dashboard", (req, res) => {
     res.render("dashboard", { students, notices });
 });
 
-// ➕ Add Student
+// ADD STUDENT
 app.post("/add", (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
@@ -105,102 +176,20 @@ app.post("/add", (req, res) => {
         college: req.body.college,
         course: req.body.course,
         amount: req.body.amount,
-        status: req.body.status
+        status: req.body.status,
+        username: req.body.username,
+        password: req.body.password,
+        paymentStatus: "Pending"
     });
 
     writeData("students.json", students);
     res.redirect("/dashboard");
 });
 
-// 📢 Add Notice
-app.post("/add-notice", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let notices = readData("notices.json");
-
-    notices.unshift({
-        id: Date.now(),
-        title: req.body.title,
-        message: req.body.message,
-        date: new Date().toLocaleDateString("en-IN")
-    });
-
-    writeData("notices.json", notices);
-    res.redirect("/dashboard");
-});
-
-// 📲 WhatsApp Important Notice Links
-app.post("/whatsapp-notice", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-    let message = req.body.message;
-
-    res.render("whatsapp-links", { students, message });
-});
-
-// ❌ Delete Notice
-app.get("/delete-notice/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let notices = readData("notices.json");
-    notices = notices.filter(n => n.id != req.params.id);
-
-    writeData("notices.json", notices);
-    res.redirect("/dashboard");
-});
-
-// ✏️ Edit Student
-app.get("/edit/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-    let student = students.find(s => s.id == req.params.id);
-
-    res.render("edit", { student });
-});
-
-// ✅ Update Student
-app.post("/update/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-
-    students = students.map(s => {
-        if (s.id == req.params.id) {
-            return {
-                id: s.id,
-                name: req.body.name,
-                aadhaar: req.body.aadhaar,
-                phone: req.body.phone,
-                college: req.body.college,
-                course: req.body.course,
-                amount: req.body.amount,
-                status: req.body.status
-            };
-        }
-        return s;
-    });
-
-    writeData("students.json", students);
-    res.redirect("/dashboard");
-});
-
-// ❌ Delete Student
-app.get("/delete/:id", (req, res) => {
-    if (!req.session.admin) return res.redirect("/admin");
-
-    let students = readData("students.json");
-    students = students.filter(s => s.id != req.params.id);
-
-    writeData("students.json", students);
-    res.redirect("/dashboard");
-});
-
-// 🚪 Logout
+// LOGOUT
 app.get("/logout", (req, res) => {
     req.session.destroy();
-    res.redirect("/admin");
+    res.redirect("/");
 });
 
 // server

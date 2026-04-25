@@ -6,8 +6,13 @@
     "phone": "917326032546",
     "college": "PNS SCHOOL OF ENGINEERING AND TECHNOLOGY",
     "course": "CSE",
-    "amount": "16,300",
-    "status": "Success"
+    "amount": "16300",
+    "status": "Success",
+
+    "username": "debasis",
+    "password": "1234",
+    "photo": "/public/student1.jpg",
+    "paymentStatus": "Paid"
   },
   {
     "id": 1777034273493,
@@ -17,6 +22,11 @@
     "college": "PNS SCHOOL OF ENGINEERING AND TECHNOLOGY",
     "course": "CSE",
     "amount": "16300",
-    "status": "Processed"
+    "status": "Processed",
+
+    "username": "suryakant",
+    "password": "1234",
+    "photo": "/public/student2.jpg",
+    "paymentStatus": "Pending"
   }
 ]

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PNSSET Scholarship Portal</title>
+    <title><%= settings.collegeName %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -9,19 +9,17 @@
 
 <body style="background:#f5f8ff;">
 
-<!-- TOP BAR -->
 <div class="bg-primary text-white py-2">
     <div class="container d-flex flex-wrap justify-content-between">
-        <span>📞 +91-9937511490</span>
-        <span>✉️ pnsset@gmail.com</span>
+        <span>📞 <%= settings.phone %></span>
+        <span>✉️ <%= settings.email %></span>
     </div>
 </div>
 
-<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-white shadow sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold text-primary" href="/">
-            🎓 PNSSET Scholarship Portal
+            🎓 <%= settings.collegeName %>
         </a>
 
         <div class="ms-auto d-flex flex-wrap gap-2">
@@ -35,16 +33,18 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <section class="py-5" style="background:linear-gradient(120deg,#052c65,#0d6efd);">
     <div class="container text-white py-5">
         <div class="row align-items-center g-4">
             <div class="col-md-7">
                 <span class="badge bg-warning text-dark mb-3">College Scholarship Management System</span>
-                <h1 class="fw-bold display-5">SC/ST Student Scholarship Portal</h1>
+
+                <h1 class="fw-bold display-5">
+                    <%= settings.collegeName %> Scholarship Portal
+                </h1>
 
                 <p class="lead mt-3">
-                    A digital platform for PNSSET students to check scholarship details,
+                    A digital platform for students to check scholarship details,
                     notices and payment status easily.
                 </p>
 
@@ -68,7 +68,6 @@
     </div>
 </section>
 
-<!-- NOTICE BOX -->
 <div id="noticeBox" class="container my-5" style="display:none;">
     <div class="card shadow-lg border-0 p-4">
         <h3 class="text-center text-primary fw-bold">📢 Latest Notices</h3>
@@ -87,7 +86,6 @@
     </div>
 </div>
 
-<!-- STATUS BOX -->
 <div id="statusBox" class="container my-5" style="display:none;">
     <div class="card shadow-lg border-0 p-4 mx-auto" style="max-width:560px;">
         <h3 class="text-center text-primary fw-bold">Scholarship Status Check</h3>
@@ -104,7 +102,6 @@
     </div>
 </div>
 
-<!-- STATISTICS -->
 <section class="container my-5">
     <div class="row g-4 text-center">
         <div class="col-md-3">
@@ -137,7 +134,6 @@
     </div>
 </section>
 
-<!-- SERVICES -->
 <section class="container my-5">
     <div class="text-center mb-4">
         <h2 class="fw-bold text-primary">Portal Services</h2>
@@ -180,7 +176,6 @@
     </div>
 </section>
 
-<!-- WHY PORTAL -->
 <section class="bg-white py-5">
     <div class="container">
         <div class="row align-items-center g-4">
@@ -207,13 +202,12 @@
     </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="bg-dark text-white pt-5 pb-3">
     <div class="container">
         <div class="row g-4">
             <div class="col-md-4">
-                <h5 class="fw-bold">PNSSET Scholarship Portal</h5>
-                <p>Digital scholarship support system for SC/ST students.</p>
+                <h5 class="fw-bold"><%= settings.collegeName %></h5>
+                <p>Digital scholarship support system for students.</p>
             </div>
 
             <div class="col-md-4">
@@ -226,8 +220,8 @@
             <div class="col-md-4">
                 <h5 class="fw-bold">Contact</h5>
                 <p>📍 Kendrapara, Odisha</p>
-                <p>📞 +91-9937511490</p>
-                <p>✉️ pnsset@gmail.com</p>
+                <p>📞 <%= settings.phone %></p>
+                <p>✉️ <%= settings.email %></p>
             </div>
         </div>
 
