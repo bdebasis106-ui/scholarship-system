@@ -2,8 +2,14 @@ const express = require("express");
 const fs = require("fs");
 const session = require("express-session");
 const path = require("path");
+const multer = require("multer");
 
 const app = express();
+
+// multer upload setup
+const upload = multer({
+    dest: "public/uploads/"
+});
 
 // middleware
 app.use(express.json());
@@ -19,14 +25,14 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// 📁 SAFE Read function (🔥 FIX)
+// 📁 SAFE Read function
 function readData(file) {
     try {
         const data = fs.readFileSync(path.join(__dirname, "data", file));
         return JSON.parse(data);
     } catch (err) {
         console.log("File error:", file);
-        return []; // crash nahi hoga
+        return [];
     }
 }
 
@@ -41,7 +47,7 @@ app.get("/", (req, res) => {
 
     res.render("index", {
         notices,
-        settings: settings[0] || settings // array ya object dono handle
+        settings: settings[0] || settings
     });
 });
 
@@ -72,6 +78,13 @@ app.post("/student-login", (req, res) => {
 app.get("/student-dashboard", (req, res) => {
     if (!req.session.student) return res.redirect("/student-login");
 
+    let students = readData("students.json");
+    let latestStudent = students.find(s => s.id == req.session.student.id);
+
+    if (latestStudent) {
+        req.session.student = latestStudent;
+    }
+
     let notices = readData("notices.json");
 
     res.render("student-dashboard", {
@@ -96,13 +109,27 @@ app.get("/id-card", (req, res) => {
 
 app.get("/payment", (req, res) => {
     if (!req.session.student) {
-        return res.redirect("/student-login"); // 🔥 IMPORTANT FIX
+        return res.redirect("/student-login");
     }
 
     res.render("payment", { student: req.session.student });
 });
 
-app.post("/pay", (req, res) => {
+app.post("/pay", upload.single("screenshot"), (req, res) => {
+    if (!req.session.student) return res.redirect("/student-login");
+
+    let students = readData("students.json");
+
+    students = students.map(s => {
+        if (s.id == req.session.student.id) {
+            s.paymentStatus = "Verification Pending";
+            s.paymentScreenshot = req.file ? "/uploads/" + req.file.filename : "";
+            req.session.student = s;
+        }
+        return s;
+    });
+
+    writeData("students.json", students);
     res.redirect("/payment-success");
 });
 
@@ -120,23 +147,19 @@ app.get("/payment-failed", (req, res) => {
 // OLD SYSTEM (ADMIN + ETC)
 // =======================
 
-// ABOUT
 app.get("/about", (req, res) => {
     res.render("about");
 });
 
-// NOTICE
 app.get("/notice", (req, res) => {
     let notices = readData("notices.json");
     res.render("notice", { notices });
 });
 
-// CONTACT
 app.get("/contact", (req, res) => {
     res.render("contact");
 });
 
-// Aadhaar check
 app.post("/check", (req, res) => {
     let students = readData("students.json");
 
@@ -149,7 +172,6 @@ app.post("/check", (req, res) => {
     }
 });
 
-// ADMIN LOGIN
 app.get("/admin", (req, res) => {
     res.render("admin-login");
 });
@@ -168,7 +190,6 @@ app.post("/admin/login", (req, res) => {
     }
 });
 
-// DASHBOARD
 app.get("/dashboard", (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
@@ -178,7 +199,6 @@ app.get("/dashboard", (req, res) => {
     res.render("dashboard", { students, notices });
 });
 
-// ADD STUDENT
 app.post("/add", (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
@@ -195,29 +215,58 @@ app.post("/add", (req, res) => {
         status: req.body.status,
         username: req.body.username,
         password: req.body.password,
-        paymentStatus: "Pending"
+        paymentStatus: "Pending",
+        paymentScreenshot: ""
     });
 
     writeData("students.json", students);
     res.redirect("/dashboard");
 });
 
-// LOGOUT
+// ✅ ADMIN PAYMENT APPROVE
+app.get("/approve-payment/:id", (req, res) => {
+    if (!req.session.admin) return res.redirect("/admin");
+
+    let students = readData("students.json");
+
+    students = students.map(s => {
+        if (s.id == req.params.id) {
+            s.paymentStatus = "Paid";
+        }
+        return s;
+    });
+
+    writeData("students.json", students);
+    res.redirect("/dashboard");
+});
+
+// ❌ ADMIN PAYMENT REJECT
+app.get("/reject-payment/:id", (req, res) => {
+    if (!req.session.admin) return res.redirect("/admin");
+
+    let students = readData("students.json");
+
+    students = students.map(s => {
+        if (s.id == req.params.id) {
+            s.paymentStatus = "Rejected";
+        }
+        return s;
+    });
+
+    writeData("students.json", students);
+    res.redirect("/dashboard");
+});
+
 app.get("/logout", (req, res) => {
     req.session.destroy();
     res.redirect("/");
 });
-
-// =======================
-// ❌ ERROR HANDLER (🔥 NEW)
-// =======================
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send("Something broke! ❌");
 });
 
-// server
 app.listen(process.env.PORT || 3000, () => {
     console.log("Server running");
 });
