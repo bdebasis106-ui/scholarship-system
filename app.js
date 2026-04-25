@@ -302,6 +302,44 @@ app.post("/add-notice", async (req, res) => {
 
     res.redirect("/dashboard");
 });
+// EDIT STUDENT PAGE
+app.get("/edit/:id", async (req, res) => {
+    if (!req.session.admin) return res.redirect("/admin");
+
+    try {
+        const student = await Student.findById(req.params.id);
+
+        if (!student) return res.send("Student not found");
+
+        res.render("edit", { student });
+    } catch (err) {
+        res.send("Edit page error: " + err.message);
+    }
+});
+
+// UPDATE STUDENT
+app.post("/edit/:id", async (req, res) => {
+    if (!req.session.admin) return res.redirect("/admin");
+
+    try {
+        await Student.findByIdAndUpdate(req.params.id, {
+            name: req.body.name,
+            aadhaar: req.body.aadhaar,
+            phone: req.body.phone,
+            college: req.body.college,
+            course: req.body.course,
+            amount: req.body.amount,
+            status: req.body.status,
+            username: req.body.username,
+            password: req.body.password,
+            paymentStatus: req.body.paymentStatus
+        });
+
+        res.redirect("/dashboard");
+    } catch (err) {
+        res.send("Update error: " + err.message);
+    }
+});
 
 app.get("/delete-notice/:id", async (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
