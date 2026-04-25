@@ -8,42 +8,132 @@
 
     <style>
         body {
-            background:#f5f8ff;
+            background: radial-gradient(circle at top, #eaf2ff, #f5f8ff 45%, #ffffff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(13,110,253,0.12);
         }
 
         .hero-section {
-            background: linear-gradient(120deg,#052c65,#0d6efd);
-            min-height: 560px;
+            background:
+                linear-gradient(120deg, rgba(5,44,101,.95), rgba(13,110,253,.88)),
+                url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80");
+            background-size: cover;
+            background-position: center;
+            min-height: 620px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            right: -120px;
+            top: -120px;
+            background: rgba(255,255,255,.12);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero-img {
-            height: 330px;
+            height: 360px;
             width: 100%;
             object-fit: cover;
-            border-radius: 25px;
+            border-radius: 30px;
+            transform: perspective(900px) rotateY(-7deg) rotateX(3deg);
+            box-shadow: 0 35px 70px rgba(0,0,0,.35);
+            border: 6px solid rgba(255,255,255,.25);
         }
 
         .nav-btn {
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 999px;
+            font-weight: 700;
+            padding: 7px 14px;
+            box-shadow: 0 8px 18px rgba(0,0,0,.08);
+            transition: .25s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(13,110,253,.25);
+        }
+
+        .premium-btn {
+            border-radius: 16px;
+            box-shadow: 0 14px 30px rgba(0,0,0,.20);
+            transition: .25s;
+        }
+
+        .premium-btn:hover {
+            transform: translateY(-4px) scale(1.02);
         }
 
         .slider-img {
-            height: 330px;
+            height: 380px;
             object-fit: cover;
-            border-radius: 20px;
+        }
+
+        .slider-3d {
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0,0,0,.22);
+            transform: perspective(1100px) rotateX(2deg);
         }
 
         .section-title {
-            font-weight: 800;
+            font-weight: 900;
             color: #052c65;
+        }
+
+        .feature-card {
+            border: 0;
+            border-radius: 25px;
+            background: white;
+            box-shadow: 0 20px 45px rgba(13,110,253,.12);
+            transition: .3s;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) rotateX(3deg);
+            box-shadow: 0 30px 70px rgba(13,110,253,.22);
+        }
+
+        .notice-3d, .status-3d {
+            border: 0;
+            border-radius: 26px;
+            box-shadow: 0 28px 65px rgba(0,0,0,.18);
+        }
+
+        footer {
+            background: linear-gradient(135deg,#071426,#111827) !important;
+        }
+
+        @media(max-width:768px) {
+            .hero-img {
+                transform: none;
+                height: 260px;
+            }
+
+            .slider-img {
+                height: 240px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
 <div class="bg-primary text-white py-2">
     <div class="container d-flex flex-wrap justify-content-between">
         <span>📞 <%= settings.phone %></span>
@@ -51,8 +141,7 @@
     </div>
 </div>
 
-<!-- CLEAN NAVBAR -->
-<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg glass-nav sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold text-primary" href="/">
             🎓 <%= settings.collegeName %>
@@ -77,9 +166,8 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero-section py-5">
-    <div class="container text-white py-5">
+    <div class="container text-white py-5 hero-content">
         <div class="row align-items-center g-5">
             <div class="col-md-7">
                 <span class="badge bg-warning text-dark mb-3">College Scholarship Management System</span>
@@ -94,15 +182,15 @@
                 </p>
 
                 <div class="d-flex flex-wrap gap-3 mt-4">
-                    <button onclick="openStatusBox()" class="btn btn-light btn-lg fw-bold">
+                    <button onclick="openStatusBox()" class="btn btn-light btn-lg fw-bold premium-btn">
                         Check Scholarship Status
                     </button>
 
-                    <button onclick="openNoticeBox()" class="btn btn-outline-light btn-lg fw-bold">
+                    <button onclick="openNoticeBox()" class="btn btn-outline-light btn-lg fw-bold premium-btn">
                         View Notices
                     </button>
 
-                    <a href="/student-register" class="btn btn-warning btn-lg fw-bold">
+                    <a href="/student-register" class="btn btn-warning btn-lg fw-bold premium-btn">
                         Register Now
                     </a>
                 </div>
@@ -110,45 +198,38 @@
 
             <div class="col-md-5">
                 <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=80"
-                     class="hero-img shadow-lg"
+                     class="hero-img"
                      alt="College Campus">
             </div>
         </div>
     </div>
 </section>
 
-<!-- AUTO IMAGE SLIDER -->
 <section class="py-5 bg-white">
     <div class="container">
         <h2 class="text-center section-title mb-4">Campus & Student Facilities</h2>
 
         <div id="campusSlider" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2500">
-            <div class="carousel-inner rounded-4 shadow">
-
+            <div class="carousel-inner slider-3d">
                 <div class="carousel-item active">
                     <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80"
-                         class="d-block w-100 slider-img"
-                         alt="Students">
+                         class="d-block w-100 slider-img">
                 </div>
 
                 <div class="carousel-item">
                     <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=1200&q=80"
-                         class="d-block w-100 slider-img"
-                         alt="Classroom">
+                         class="d-block w-100 slider-img">
                 </div>
 
                 <div class="carousel-item">
                     <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
-                         class="d-block w-100 slider-img"
-                         alt="Office">
+                         class="d-block w-100 slider-img">
                 </div>
 
                 <div class="carousel-item">
                     <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80"
-                         class="d-block w-100 slider-img"
-                         alt="Graduation">
+                         class="d-block w-100 slider-img">
                 </div>
-
             </div>
 
             <button class="carousel-control-prev" type="button" data-bs-target="#campusSlider" data-bs-slide="prev">
@@ -162,9 +243,40 @@
     </div>
 </section>
 
-<!-- NOTICE -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center section-title mb-4">Why Choose This Portal?</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card p-4 text-center">
+                    <h1>🎓</h1>
+                    <h5 class="fw-bold text-primary">Student Friendly</h5>
+                    <p class="text-muted">Easy registration, login and scholarship status check.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card p-4 text-center">
+                    <h1>💳</h1>
+                    <h5 class="fw-bold text-success">Payment Proof</h5>
+                    <p class="text-muted">Students can upload payment screenshots securely.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card p-4 text-center">
+                    <h1>🛡️</h1>
+                    <h5 class="fw-bold text-danger">Admin Control</h5>
+                    <p class="text-muted">Admin can manage students, notices and payment status.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div id="noticeBox" class="container my-5" style="display:none;">
-    <div class="card shadow-lg border-0 p-4">
+    <div class="card notice-3d p-4">
         <h3 class="text-center text-primary fw-bold">📢 Latest Notices</h3>
 
         <% if(notices.length === 0) { %>
@@ -181,9 +293,8 @@
     </div>
 </div>
 
-<!-- STATUS -->
 <div id="statusBox" class="container my-5" style="display:none;">
-    <div class="card shadow-lg border-0 p-4 mx-auto" style="max-width:560px;">
+    <div class="card status-3d p-4 mx-auto" style="max-width:560px;">
         <h3 class="text-center text-primary fw-bold">Scholarship Status Check</h3>
         <p class="text-muted text-center">Enter Aadhaar number to view details</p>
 
@@ -198,7 +309,6 @@
     </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="bg-dark text-white pt-5 pb-3">
     <div class="container">
         <div class="row g-4">
